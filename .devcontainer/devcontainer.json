@@ -29,6 +29,7 @@
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
     "mounts": [
         "source=claudeconfig-${devcontainerId},target=/home/vscode/.claude,type=volume",
+        "source=codexconfig-${devcontainerId},target=/home/vscode/.codex,type=volume",
         "source=elan-toolchains-${devcontainerId},target=/home/vscode/.elan,type=volume",
         "source=uv-cache-${devcontainerId},target=/home/vscode/.cache/uv,type=volume",
         "source=uv-local-${devcontainerId},target=/home/vscode/.local,type=volume",

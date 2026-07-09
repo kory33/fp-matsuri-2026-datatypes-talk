@@ -15,7 +15,7 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
     && echo "$SNIPPET" >> "/home/$USERNAME/.bashrc"
 
 # Install Codex
-RUN wget https://github.com/openai/codex/releases/download/rust-v0.144.0/codex-x86_64-unknown-linux-musl.tar.gz -O /tmp/codex.tar.gz && \
+RUN wget https://github.com/openai/codex/releases/download/rust-v0.144.1/codex-x86_64-unknown-linux-musl.tar.gz -O /tmp/codex.tar.gz && \
   tar -xvf /tmp/codex.tar.gz -C /usr/local/bin/ && \
   rm /tmp/codex.tar.gz && \
   mv /usr/local/bin/codex-x86_64-unknown-linux-musl /usr/local/bin/codex && \
