@@ -1,10 +1,10 @@
 name = "kory-fp-matsuri-2026-materials"
 version = "0.1.0"
-defaultTargets = ["kory-fp-matsuri-2026-materials"]
+defaultTargets = ["KoryFPMatsuri2026Materials"]
 
 [[lean_lib]]
 name = "KoryFPMatsuri2026Materials"
-root = "Main"
+roots = ["Root"]
 
 [[require]]
 name = "mathlib"
