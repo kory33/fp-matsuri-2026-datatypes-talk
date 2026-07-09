@@ -1,1 +1,2 @@
 import Root.MTypesAsQuotientOfPointedCoalgebras
+import Root.NonStrictlyPositiveTypes
