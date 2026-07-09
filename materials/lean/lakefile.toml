@@ -1,0 +1,11 @@
+name = "kory-fp-matsuri-2026-materials"
+version = "0.1.0"
+defaultTargets = ["kory-fp-matsuri-2026-materials"]
+
+[[lean_lib]]
+name = "KoryFPMatsuri2026Materials"
+root = "Main"
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
