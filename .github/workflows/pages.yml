@@ -1,0 +1,75 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  # The subpath to serve the redirect under, relative to the Pages site root.
+  REDIRECT_PATH: slides
+  REDIRECT_URL: https://docs.google.com/presentation/d/1On7-Ap0cHZzUDRcSaYyJ1K8DGgFwiJXDZrzqTjnwDcE/edit?usp=sharing
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assemble site
+        run: |
+          set -euo pipefail
+          mkdir -p "_site/${REDIRECT_PATH}"
+          # Pages runs Jekyll over the artifact unless this file is present.
+          touch _site/.nojekyll
+
+          cat > "_site/${REDIRECT_PATH}/index.html" <<HTML
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <title>Redirecting…</title>
+              <link rel="canonical" href="${REDIRECT_URL}">
+              <meta name="robots" content="noindex">
+              <meta http-equiv="refresh" content="0; url=${REDIRECT_URL}">
+              <script>location.replace("${REDIRECT_URL}");</script>
+            </head>
+            <body>
+              <p>Redirecting to <a href="${REDIRECT_URL}">${REDIRECT_URL}</a>.</p>
+            </body>
+          </html>
+          HTML
+
+          cat > _site/index.html <<HTML
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <title>${GITHUB_REPOSITORY}</title>
+            </head>
+            <body>
+              <p><a href="./${REDIRECT_PATH}/">${REDIRECT_PATH}</a></p>
+            </body>
+          </html>
+          HTML
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
