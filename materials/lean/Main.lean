@@ -186,6 +186,17 @@ def equivM : P.MQ ≃ P.M where
   left_inv := ofM_toM
   right_inv := toM_ofM
 
+/-- An inverse to `destructure` by constructing in M-side. -/
+def mkM (x : P.Obj P.MQ) : P.MQ := ofM (M.mk (P.map toM x))
+
+@[simp] theorem dest_mkM (x : P.Obj P.MQ) : (mkM x).destructure = x := by
+  show P.map ofM (M.dest (M.mk (P.map toM x))) = x
+  rw [M.dest_mk, PFunctor.map_map, show ofM ∘ toM = id from funext ofM_toM, PFunctor.id_map]
+
+@[simp] theorem mkM_dest (q : P.MQ) : mkM q.destructure = q := by
+  rw [mkM, toM, ← M.dest_corec destructure q, M.mk_dest]
+  exact ofM_toM q
+
 end Small
 
 end MQ
