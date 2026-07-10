@@ -13,7 +13,10 @@ there's already a difference in the definition of the carrier (I am not certain 
 Contrast with Mathlib's `PFunctor.M` (ω-limit of approximations) and
 `QPF.Cofix` (quotient of `PFunctor.M` by `Mcongr`): here the carrier is the
 generation state itself, so `dest` costs one application of the step map,
-definitionally, independent of access path.
+definitionally, independent of access path. This implementation in turn
+suffers from the performance issues on manually constructed (by `mkM`) elements
+(due to the universe level bump we can't use the original `PFunctor.MQ` as a
+wrapped state machine).
 
 Implemented primarily by Claude Fable 5, refactored and commented by @kory33, 2026-07-09.
 -/
