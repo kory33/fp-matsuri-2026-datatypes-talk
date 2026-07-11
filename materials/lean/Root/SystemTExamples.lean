@@ -98,13 +98,13 @@ namespace NatBasicSelfInvokingDefs
 -- but since these definitions are *progressive* and strictly reduce the argument size,
 -- they can be translated into a definition using foldNat.
 
-def addRec (n2 : Nat) : Nat → Nat
-| Nat.zero     => n2
-| (Nat.succ n1) => succ (addRec n2 n1)
+def addRec : Nat → Nat → Nat
+| Nat.zero      => (λ n2 => n2)
+| (Nat.succ n1) => (λ n2 => succ (addRec n1 n2))
 
-def mulRec (n2 : Nat) : Nat → Nat
-| Nat.zero     => zero
-| (Nat.succ n1) => addRec n2 (mulRec n2 n1)
+def mulRec : Nat → Nat → Nat
+| Nat.zero      => (λ _  => zero)
+| (Nat.succ n1) => (λ n2 => add n2 (mulRec n1 n2))
 
 end NatBasicSelfInvokingDefs
 
