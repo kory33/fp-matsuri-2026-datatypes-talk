@@ -91,4 +91,21 @@ theorem isEvenOne   : isEven one   = false := rfl
 theorem isEvenTwo   : isEven two   = true := rfl
 end NatBasicTests
 
+namespace NatBasicSelfInvokingDefs
+
+-- These definitions are "self-invoking" in the sense that
+-- the function bodies refer to the function being defined,
+-- but since these definitions are *progressive* and strictly reduce the argument size,
+-- they can be translated into a definition using foldNat.
+
+def addRec (n2 : Nat) : Nat → Nat
+| Nat.zero     => n2
+| (Nat.succ n1) => succ (addRec n2 n1)
+
+def mulRec (n2 : Nat) : Nat → Nat
+| Nat.zero     => zero
+| (Nat.succ n1) => addRec n2 (mulRec n2 n1)
+
+end NatBasicSelfInvokingDefs
+
 end SystemTExamples
