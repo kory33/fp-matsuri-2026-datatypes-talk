@@ -32,25 +32,39 @@ abbrev FoldCoList.{u} :=
 def foldCoListIgnore : FoldCoList := fun _ z _ ↦ z
 
 /-- The usual computation laws expected of a fold on `CoList`. -/
-structure LawfulFoldCoList (foldCoList : FoldCoList) : Prop where
+structure FoldCoListIsLawful (foldCoList : FoldCoList) : Prop where
   nil (f : α → β → β) (z : β) : foldCoList f z nil = z
   cons (f : α → β → β) (z : β) (a : α) (xs : CoList α) :
     foldCoList f z (ListInfty.cons a xs) = f a (foldCoList f z xs)
 
+def LawfulFoldCoList : Type (u + 1) := PSigma FoldCoListIsLawful
+
+def coListLength (fold : LawfulFoldCoList) : CoList α → ULift Nat :=
+  fold.1 (fun _ n ↦ ULift.up (n.down + 1)) (ULift.up 0)
+
+theorem coListLength_cons (fold : LawfulFoldCoList) (a : α) (xs : CoList α) :
+    coListLength fold (ListInfty.cons a xs) = ULift.up ((coListLength fold xs).down + 1) := by
+  exact fold.2.cons _ _ _ _
+
 /-- No total polymorphic fold on possibly infinite lists can satisfy the usual fold laws. -/
-theorem not_lawfulFoldCoList (foldCoList : FoldCoList) : ¬ LawfulFoldCoList foldCoList := by
+theorem not_lawfulFoldCoList (foldCoList : FoldCoList) : ¬ FoldCoListIsLawful foldCoList := by
   intro lawful
-  let a : ULift Unit := ULift.up ()
-  let z : ULift Nat := ULift.up 0
-  have h := lawful.cons (fun (_ : ULift Unit) n ↦ ULift.up (n.down + 1)) z a
-    (repeatCoList a)
-  simp only [cons_repeatCoList] at h
-  have hn := congrArg ULift.down h
-  change _ = _ + 1 at hn
-  exact (Nat.ne_of_lt (Nat.lt_succ_self _)) hn
+  let fold : LawfulFoldCoList := ⟨foldCoList, lawful⟩
+  let lifted_garbage : ULift Unit := ULift.up ()
+
+  -- apply the cons-case computation law to the list [(), (), (), ...]
+  let inf_list := repeatCoList lifted_garbage
+  let len := (coListLength fold inf_list).down
+
+  -- len "appears" infinite despite being Nat, and this is an arithmetic contradiction
+  have len_eq_slen : len = len + 1 := by
+    have h := congrArg ULift.down (coListLength_cons fold lifted_garbage inf_list)
+    simpa only [len, inf_list, cons_repeatCoList] using h
+
+  omega
 
 /-- Equivalently, a lawful total fold on `CoList` does not exist. -/
-theorem no_lawfulFoldCoList : ¬ ∃ foldCoList : FoldCoList, LawfulFoldCoList foldCoList := by
+theorem no_lawfulFoldCoList : ¬ ∃ foldCoList : FoldCoList, FoldCoListIsLawful foldCoList := by
   rintro ⟨foldCoList, lawful⟩
   exact not_lawfulFoldCoList foldCoList lawful
 
